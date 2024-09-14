@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Consulta APIs Externas</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      text-align: center;
+      background-color: #f4f4f9;
+      padding: 20px;
+    }
+    h1 {
+      color: #333;
+    }
+    button {
+      padding: 10px 20px;
+      font-size: 16px;
+      color: #fff;
+      background-color: #007bff;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+      transition: background-color 0.3s ease;
+    }
+    button:hover {
+      background-color: #0056b3;
+    }
+    .content {
+      margin-top: 20px;
+    }
+    .error {
+      color: red;
+    }
+    table {
+      width: 80%;
+      margin: 20px auto;
+      border-collapse: collapse;
+    }
+    table, th, td {
+      border: 1px solid #ddd;
+    }
+    th, td {
+      padding: 8px;
+      text-align: left;
+    }
+    th {
+      background-color: #f2f2f2;
+    }
+  </style>
+</head>
+<body>
+  <h1>Consulta APIs Externas</h1>
+  <button id="consultarBtn">Consultar APIs</button>
+  <div class="content">
+    <h3>Imagen de Perro:</h3>
+    <img id="dog" alt="Imagen de Perro" width="300" />
+    <h3>Usuarios:</h3>
+    <table id="usersTable">
+      <thead>
+        <tr>
+          <th>ID</th>
+          <th>Nombre</th>
+          <th>Correo Electrónico</th>
+        </tr>
+      </thead>
+      <tbody></tbody>
+    </table>
+  </div>
+
+  <script>
+    document.addEventListener('DOMContentLoaded', () => {
+      document.getElementById('consultarBtn').addEventListener('click', async () => {
+        try {
+          const response = await fetch('http://localhost:3001/api/combine');
+          const data = await response.json();
+
+          if (data.dog && data.users) {
+            const dogImage = document.getElementById('dog');
+            dogImage.src = data.dog;
+            
+            const usersTableBody = document.querySelector('#usersTable tbody');
+            usersTableBody.innerHTML = data.users.map(user => `
+              <tr>
+                <td>${user.id}</td>
+                <td>${user.name}</td>
+                <td>${user.email}</td>
+              </tr>
+            `).join('');
+          } else {
+            throw new Error('Datos no encontrados');
+          }
+        } catch (error) {
+          document.querySelector('.content').innerHTML = `<p class="error">Error al consultar las APIs: ${error.message}</p>`;
+        }
+      });
+    });
+  </script>
+</body>
+</html>
